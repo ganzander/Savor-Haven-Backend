@@ -21,10 +21,6 @@ const foodItemsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  qtyordered: {
-    type: String,
-    default: null,
-  },
   size: {
     type: String,
     default: "",

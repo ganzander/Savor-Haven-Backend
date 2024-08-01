@@ -38,9 +38,11 @@ const UserSchema = new mongoose.Schema(
     },
     cart: {
       type: Array,
+      default: [],
     },
     order: {
       type: Array,
+      default: [],
     },
     isAdmin: {
       type: Boolean,

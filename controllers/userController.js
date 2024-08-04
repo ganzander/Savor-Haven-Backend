@@ -187,10 +187,8 @@ async function updateImage(req, res) {
     res.send({ Success: false });
   }
 }
-
 async function payment(req, res) {
-  const { data } = req.body;
-
+  const { data, user } = req.body;
   const lineItems = data.map((product) => ({
     price_data: {
       currency: "inr",
@@ -202,15 +200,31 @@ async function payment(req, res) {
     quantity: product.qtyOrdered,
   }));
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: lineItems,
-    mode: "payment",
-    success_url: "http://localhost:5173/success",
-    cancel_url: "http://localhost:5173/cancel",
-  });
+  try {
+    const customer = await stripe.customers.create({
+      name: user.name,
+      address: {
+        line1: "424/16",
+        postal_code: "122001",
+        city: "Gurgaon",
+        state: "Haryana",
+        country: "India",
+      },
+    });
 
-  res.send({ Success: "true", sessionId: session.id });
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: "payment",
+      success_url: "https://savor-haven.vercel.app/success",
+      cancel_url: "https://savor-haven.vercel.app/cancel",
+      customer: customer.id,
+    });
+
+    res.send({ Success: "true", sessionId: session.id });
+  } catch (err) {
+    console.log(err);
+  }
 }
 module.exports = {
   createUser,
